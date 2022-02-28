@@ -9,6 +9,7 @@ const db = require('./reactorModels.js')
 
 const reactorController = {};
 
+// pull S3 object URLs
 reactorController.getURLs = async (req, res, next) => {
   try{AWS.config.update({ 
     region: region,
@@ -40,42 +41,37 @@ reactorController.getURLs = async (req, res, next) => {
   }
 }
 
-reactorController.addReactors = (req, res, next) => {
+// add S3 objects to postgresql
+// reactorController.addReactors = (req, res, next) => {
   // const status = 'unclassified';
   // const values = [];
-
-  // for(let i = 0; i < 10; i++) {
-  //   values.push([res.locals.urls[i], 'unclassified'])
-  // }
 
   // const sourceURLs = [res.locals.urls[i]];
   // const queryString = `INSERT INTO Reactors (source, status) VALUES ($1, $2, $3, $4,$5)`
   // console.log(values)
   // db.query(queryString, values)
 
-  next();
+//   next();
   
-}
+// }
 
+// get all or filtered reactors from postgresql
 reactorController.getReactors = async (req, res, next) => {
   const status = [req.params.status];
   
   try{
     let queryString;
-
+    let result;
+    // if a filter has been selected, update query to include params for selected status
     if(status[0] === 'all') {
       queryString = 'SELECT * FROM Reactors'
-      const result = await db.query(queryString)
-      res.locals.allReactors = result.rows;
-    
+      result = await db.query(queryString)
     } else {
       queryString = `SELECT * FROM Reactors WHERE status=$1`
-      const result = await db.query(queryString, status)
-      res.locals.allReactors = result.rows;
+      result = await db.query(queryString, status)
     }
     // send source urls and status back to the front end
-    
-    
+    res.locals.allReactors = result.rows;
     next();
   }
   catch (err) {
@@ -86,18 +82,14 @@ reactorController.getReactors = async (req, res, next) => {
   }
 }
 
+// update the status of a reactor
 reactorController.updateReactor = async (req, res, next) => {
   const queryParams = [req.body.id, req.body.status];
 
   try{
     const queryString = 'UPDATE Reactors SET status=$2 WHERE id=$1 RETURNING *';
-
     const result = await db.query(queryString, queryParams)
-    
     res.locals.updatedReactor = result.rows;
-    
-    console.log('result from update query: ',result)
-
     next();
   }
   catch (err) {

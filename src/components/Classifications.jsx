@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import { useState} from "react";
 
 function Classifications(props) {
   const [status, setStatus] = useState('');
@@ -12,7 +12,6 @@ function Classifications(props) {
   }
 
   const handleSubmit =(e) => {
-    e.preventDefault();
     
     console.log('status from state: ',status)
     fetch('/reactors', {
@@ -47,7 +46,6 @@ function Classifications(props) {
       </label>
       <button type="submit" >Submit</button>
     </form>
-
   )
 }
 

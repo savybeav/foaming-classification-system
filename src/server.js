@@ -3,25 +3,23 @@ const PORT = 8080;
 const path = require('path');
 const app = express();
 
-
-
 const reactorController = require('./reactorController');
 
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-// route to get all reactors
+// route to get all or filtered reactors
 app.get('/reactors/:status', reactorController.getReactors, (req, res) => {
  return res.status(200).json(res.locals.allReactors);
 });
 
-// route to update reactor entry in db:
+// route to update reactor entry in postgresql
 app.patch('/reactors', reactorController.updateReactor, (req, res) => {
   return res.status(200).json(res.locals.updatedReactor);
 })
 
-// route to get all reactors from S3 bucket and add to postgresql db:
+// route to get all reactors from S3 bucket and add to postgresql 
 // app.get('/addReactors', reactorController.getURLs, reactorController.addReactors, (req, res) => {
 //   return res.json(res.locals.urls)
 // })

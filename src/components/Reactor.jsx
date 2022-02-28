@@ -7,10 +7,10 @@ function Reactor(props) {
   const URL = `https://take-home-foam-challenge.s3.us-west-2.amazonaws.com/${source}`
   
   return (
-    <div>
+    <div className='reactorCard'>
       <img src={URL} alt='reactor'/>
-      <p>{id}</p>
-      <p>{status}</p>
+      <p>ID: {id}</p>
+      <p>Current Status: {status}</p>
       <Classifications id={id}/>
     </div>
   )
