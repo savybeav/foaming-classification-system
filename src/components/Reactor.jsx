@@ -1,4 +1,4 @@
-
+import Classifications from './Classifications.jsx'
 
 
 function Reactor(props) {
@@ -11,6 +11,7 @@ function Reactor(props) {
       <img src={URL} alt='reactor'/>
       <p>{id}</p>
       <p>{status}</p>
+      <Classifications id={id}/>
     </div>
   )
 }

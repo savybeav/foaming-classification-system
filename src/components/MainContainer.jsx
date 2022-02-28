@@ -1,29 +1,23 @@
 import React, { useEffect, useState} from "react";
 
 import Reactor from './Reactor.jsx';
+import Filter from './Filter.jsx';
 
 function MainContainer() {
       
   const [list, setList] = useState([]);
-
   
   useEffect(() => {
-    fetch('/reactors')
+    fetch('/reactors/all')
       .then(res => res.json())
-      .then(setList
-        // for(let i = 0; i < data.length; i++) {
-        // reactorList.push(<Reactor id={data[i].id} source={data[i].source} status={data[i].status}/>)
-        
-      )
+      .then(setList)
+      .catch(err => console.log('MainContainer fetch /reactors/all: ERROR: ', err));
   }, [])
-
-  // for(let i = 0; i < results.length; i++) {
-  //   reactorList.push(<Reactor id={results[i].id} source={results[i].source} status={results[i].status}/>)
-  // }
   
     
   return (
     <div>
+      <Filter/>
       {list.map(reactor => 
         <Reactor key={reactor.id} id={reactor.id} source={reactor.source} status={reactor.status}/>
         )}

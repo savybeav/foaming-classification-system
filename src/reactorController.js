@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-
+// S3 access credentials
 const region = 'us-west-2';
 const bucket = 'take-home-foam-challenge';
 const accessKeyId = 'AKIA6AE547J2U2ODHJVO';
@@ -10,7 +10,7 @@ const db = require('./reactorModels.js')
 const reactorController = {};
 
 reactorController.getURLs = async (req, res, next) => {
-  AWS.config.update({ 
+  try{AWS.config.update({ 
     region: region,
     accessKeyId: accessKeyId,
     secretAccessKey: secretAccessKey,
@@ -30,8 +30,14 @@ reactorController.getURLs = async (req, res, next) => {
   
   res.locals.urls = sourceURLs;
   
-  return next()
-
+  next()
+  }
+  catch (err) {
+    next({
+      log: `reactorController.getURLs: ERROR: ${err}`,
+      message: { err: 'Error occured in reactorController.getURLs middleware.'}
+    })
+  }
 }
 
 reactorController.addReactors = (req, res, next) => {
@@ -47,18 +53,59 @@ reactorController.addReactors = (req, res, next) => {
   // console.log(values)
   // db.query(queryString, values)
 
-  return next();
+  next();
   
 }
 
-reactorController.getReactors = (req, res, next) => {
-  // query db for all reactors
-  const queryString = 'SELECT * FROM Reactors'
-  // send source urls and status back to the front end
-  db.query(queryString)
-    .then(data => res.locals.allReactors = data.rows)
-    .then(() => next())
-  // return next
+reactorController.getReactors = async (req, res, next) => {
+  const status = [req.params.status];
+  
+  try{
+    let queryString;
+
+    if(status[0] === 'all') {
+      queryString = 'SELECT * FROM Reactors'
+      const result = await db.query(queryString)
+      res.locals.allReactors = result.rows;
+    
+    } else {
+      queryString = `SELECT * FROM Reactors WHERE status=$1`
+      const result = await db.query(queryString, status)
+      res.locals.allReactors = result.rows;
+    }
+    // send source urls and status back to the front end
+    
+    
+    next();
+  }
+  catch (err) {
+    next({
+      log: `reactorController.getReactors: ERROR: ${err}`,
+      message: { err: 'Error occured in reactorController.getReactors middleware.'}
+    })
+  }
 }
+
+reactorController.updateReactor = async (req, res, next) => {
+  const queryParams = [req.body.id, req.body.status];
+
+  try{
+    const queryString = 'UPDATE Reactors SET status=$2 WHERE id=$1 RETURNING *';
+
+    const result = await db.query(queryString, queryParams)
+    
+    res.locals.updatedReactor = result.rows;
+    
+    console.log('result from update query: ',result)
+
+    next();
+  }
+  catch (err) {
+    next({
+      log: `reactorController.updateReactor: ERROR: ${err}`,
+      message: { err: 'Error occured in reactorController.updateReactor middleware.'}
+    })
+  }
+ }
   
 module.exports = reactorController;
