@@ -16,7 +16,7 @@ You may also see any lint errors in the console.
 
 ### `npm run start-dev`
 
-Starts the Node.js server on http://localhost:8080.\
+Starts the Node.js server on http://localhost:8080
 
 ### `npm run build`
 
